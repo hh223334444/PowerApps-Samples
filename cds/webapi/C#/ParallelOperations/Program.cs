@@ -13,7 +13,7 @@ namespace PowerApps.Samples
         static readonly string connectionString = ConfigurationManager.ConnectionStrings["Connect"].ConnectionString;
         static readonly ServiceConfig serviceConfig = new ServiceConfig(connectionString);
         //Controls the max degree of parallelism
-        static readonly int maxDegreeOfParallelism = 10;
+        static readonly int maxDegreeOfParallelism = 50;//(2s、2s)
         //How many records to create with this sample.
         static readonly int numberOfRecords = 100;
 
@@ -56,7 +56,7 @@ namespace PowerApps.Samples
 
             try
             {
-               
+
                 using (CDSWebApiService svc = new CDSWebApiService(serviceConfig))
                 {
                     Console.WriteLine($"Creating {accountsToImport.Count} accounts");
@@ -64,12 +64,13 @@ namespace PowerApps.Samples
 
                     //Create the accounts in parallel
                     Parallel.ForEach(accountsToImport, parallelOptions, (account) =>
-
                     {
                         //Add the Uri returned to the ConcurrentBag to delete later
                         accountsToDelete.Add(svc.PostCreate("accounts", account));
-
                     });
+
+
+
 
                     //Calculate the duration to complete
                     var secondsToCreate = (DateTime.Now - startCreate).TotalSeconds;
@@ -93,12 +94,12 @@ namespace PowerApps.Samples
                     Console.WriteLine("Sample completed. Press any key to exit.");
                     Console.ReadLine();
                 }
-             }
-			catch (Exception)
-			{
+            }
+            catch (Exception)
+            {
 
-				throw;
-			}
+                throw;
+            }
         }
     }
 }
